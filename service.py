@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
 
 # Import packages
-import requests
-import xml.etree.ElementTree as ET
-from datetime import datetime
-from dateutil import tz
 import pdb
-import math
+import helpers as hs
 
 # Base for river heights
-XML_BASE="http://water.weather.gov/ahps2/hydrograph_to_xml.php?gage=evvi3&output=xml"
+XML_BASE = "http://water.weather.gov/ahps2/hydrograph_to_xml.php?gage=evvi3&output=xml"
+
+# Base for timezones
+YOUR_ZONE = "America/Chicago"
 
 def handler(event, context):
         
@@ -72,64 +71,9 @@ def current_height():
     card_title = "How high is the Ohio river?"
     reprompt_text = ""
     should_end_session = True
-
-    # Curl response
-    response = requests.get(XML_BASE)
-
-    # Convert for XML parsing
-    response = ET.fromstring(response.text)
     
-    # Parse river height out
-    obs = response.find("observed")
-    last_obs = obs[0]
-    
-    last_time = last_obs[0].text
-    # Change over time zone
-    from_zone = tz.gettz('UTC')
-    to_zone = tz.gettz('America/Chicago')
-    
-    # utc = datetime.utcnow()
-    last_time_utc = datetime.strptime(last_time, '%Y-%m-%dT%H:%M:%S-00:00')
-    now_time_utc = datetime.now(tz.tzutc())
-
-    # Tell the datetime object that it's in UTC time zone since 
-    # datetime objects are 'naive' by default
-    last_time_utc = last_time_utc.replace(tzinfo=from_zone)
-    now_time_utc = now_time_utc.replace(tzinfo=from_zone)
-
-    # Convert time zone
-    last_time_central = last_time_utc.astimezone(to_zone)
-    now_time_central = now_time_utc.astimezone(to_zone)
-    
-    # Get height
-    last_height = last_obs[1].text
-    
-    units = last_obs[1].get('units')
-    if units != 'ft':
-        raise ValueError("Data is not in feet")
-    else:
-        units = 'feet'
-    
-    if now_time_central.date() == last_time_central.date():
-        pm = math.floor((last_time_central.hour)/12)
-        if pm == 0:
-            pm = " AM"
-        elif pm == 1:
-            pm = ' PM'
-        timestr = 'today at ' + str(last_time_central.hour%12) + (' ' + str(last_time_central.minute) if last_time_central.minute > 0 else '') + pm
-    else:
-        delta = datetime.today().date() - last_time_central.date()
-        if delta.days == 1:
-            pm = math.floor((last_time_central.hour)/12)
-            if pm == 0:
-                pm = " AM"
-            elif pm == 1:
-                pm = ' PM'
-            timestr = 'yesterday at ' + str(last_time_central.hour%12) + (' ' + str(last_time_central.minute) if last_time_central.minute > 0 else '') + pm
-        else:
-            timestr = str(delta.days) + ' days ago'
-
-    speech_output = "As of " + timestr + ", the river was " + last_height + " feet"
+    last_obs = hs.obs(XML_BASE,0,YOUR_ZONE)
+    speech_output = "As of " + last_obs.timestr + ", the river was " + last_obs.height + " " + last_obs.units
 
     return build_response(session_attributes, build_speechlet_response(
         card_title, speech_output, reprompt_text, should_end_session))
