@@ -3,12 +3,7 @@
 # Import packages
 import pdb
 import helpers as hs
-
-# Base for river heights
-XML_BASE = "http://water.weather.gov/ahps2/hydrograph_to_xml.php?gage=evvi3&output=xml"
-
-# Base for timezones
-YOUR_ZONE = "America/Chicago"
+import cfg
 
 def handler(event, context):
         
@@ -71,9 +66,8 @@ def current_height():
     card_title = "How high is the Ohio river?"
     reprompt_text = ""
     should_end_session = True
-    
-    last_obs = hs.obs(XML_BASE,0,YOUR_ZONE)
-    speech_output = "As of " + last_obs.timestr + ", the river was " + last_obs.height + " " + last_obs.units
+    last_obs = past.datum("obs",0) # n-back of 0
+    speech_output = "As of " + last_obs.get_timestr() + ", the river was " + last_obs.height + " " + last_obs.units
 
     return build_response(session_attributes, build_speechlet_response(
         card_title, speech_output, reprompt_text, should_end_session))
