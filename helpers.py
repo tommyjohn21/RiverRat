@@ -9,7 +9,7 @@ class datum:
     def __init__(self,key,n):
         # Curl response
         response = requests.get(cfg.XML_BASE)
-        pdb.set_trace()
+        
         # Convert for XML parsing to element tree (et)
         et = ET.fromstring(response.text)
         
@@ -44,8 +44,8 @@ def get_time(dtm):
     time = arrow.get(time,'YYYY-MM-DDTHH:mm:ss-00:00')
     
     # Verify timezone is UTC
-    assert(dtm[0].get('timezone') == time.tzinfo.tzname(0), "Time zones don't match")
-    assert(time.tzinfo.tzname(0) == "UTC", "Time zone is not UTC")
+    assert dtm[0].get('timezone') == time.tzinfo.tzname(0), "Time zones don't match"
+    assert time.tzinfo.tzname(0) == "UTC", "Time zone is not UTC"
     
     return time
 
