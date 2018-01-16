@@ -66,8 +66,9 @@ def current_height():
     card_title = "How high is the Ohio river?"
     reprompt_text = ""
     should_end_session = True
-    last_obs = past.datum("obs",0) # n-back of 0
-    speech_output = "As of " + last_obs.get_timestr() + ", the river was " + last_obs.height + " " + last_obs.units
+ 
+    last_obs = hs.datum("obs",0) # n-back of 0
+    speech_output = "As of " + last_obs.time.humanize() + ", the river was " + last_obs.height + " " + last_obs.units
 
     return build_response(session_attributes, build_speechlet_response(
         card_title, speech_output, reprompt_text, should_end_session))
