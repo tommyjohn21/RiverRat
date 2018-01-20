@@ -4,6 +4,15 @@
       "intent": "CurrentHeight"
     },
     {
+      "slots": [
+        {
+          "name": "Date",
+          "type": "AMAZON.DATE"
+        }
+      ],
+      "intent": "LookUpHeight"
+    },
+    {
       "intent": "AMAZON.HelpIntent"
     },
     {
