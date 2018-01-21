@@ -83,8 +83,10 @@ def look_up_height(date):
      
     # Return nearest observations/predictions
     data = hs.data_array(date)
+    
+    # Generate speech output
+    speech_output = "<speak>On <say-as interpret-as=""date"">" + "0120" + "</say-as>, " + data.humanize() + "</speak>"
     pdb.set_trace()
-    # speech_output = 
     return build_response(session_attributes, build_speechlet_response(
         card_title, speech_output, reprompt_text, should_end_session))
 

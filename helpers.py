@@ -33,15 +33,27 @@ class data_array:
         self.req = arrow.get(date['value'])
         
         # Find data for days listed in req
-        self.data = get_matching_data(self.req)
-        
+        self.heights, self.units, self.key = get_matching_data(self.req)
+
     def min(self):
         # Find the minimum of the data_array
-        return min([float(d.height) for d in self.data])
+        return min([float(d) for d in self.heights])
          
     def max(self):
         # Find the minimum of the data_array
-        return max([float(d.height) for d in self.data])
+        return max([float(d) for d in self.heights])
+        
+    def humanize(self):
+        
+        # Humanize data
+        if self.key == "forecast":
+            human_string = "the river is predicted to be between " + str(self.min()) + " and " + str(self.max()) + " feet"
+        elif self.key == "observed":
+            human_string = "the river was observed to be between " + str(self.min()) + " and " + str(self.max()) + " feet"
+        else:
+            raise ValueError("Both observations and predictions are present in the date-matched data!")
+            
+        return human_string
 
 def get_datum(et,key,n):
     dtm = et.find(key)
@@ -75,45 +87,45 @@ def get_height(dtm):
         
     return height, units
     
-def get_timeline(et):
+def parse_timeline(et,req):
 
-    # Harvest all data
-    timeline = dict()
+    # Harvest all matching data
+    matching_data = list()
+    keys = list()
     for key in ["observed","forecast"]:
-        timeline[key] = list()
-        for dtm in et.find(key).findall("datum"):
-            timeline[key].append(get_time(dtm))
+        for i,dtm in enumerate(et.find(key).findall("datum")):
+            if get_time(dtm).to(cfg.YOUR_ZONE).date()==req.date():
+                matching_data.append(get_height(dtm))
+                keys.append(key)
 
     # Return timeline
-    return timeline
+    return matching_data, keys
     
 def get_matching_data(req):
-    
+
     # Curl response
     response = requests.get(cfg.XML_BASE)
     
     # Convert for XML parsing to element tree (et)
     et = ET.fromstring(response.text)
     
-    # Process timeline
-    timeline = get_timeline(et)
+    # Process timeline and return data where the date matches
+    matching_data,keys = parse_timeline(et,req)
     
-    # Parse out indices of the correct dates
-    idx = dict()
-    for key in ["observed","forecast"]:
-        dates = [time.date() for time in timeline[key]]
-        idx[key] = []
-        for i,d in enumerate(dates):
-            if d == req.date():
-                idx[key].append(i)
+    # Separate units from heights
+    heights = [d[0] for d in matching_data]
+    assert all([d[1]=="feet" for d in matching_data])
+    units = "feet"
     
-    # Grab the actual data points
-    data = list()
-    for key in ["observed","forecast"]:
-        for i in idx[key]:
-            data.append(datum(key,i))
-    
+    # Key processing
+    if all(k=="forecast" for k in keys):
+        key = "forecast"
+    elif all(k=="observed" for k in keys):
+        key = "observed"
+    else:
+        raise ValueError("Dont know how to handle mixed observations and predictions yet!")
+
     # Output the correct list  
-    return data
+    return heights, units, key
         
     
