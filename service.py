@@ -58,14 +58,14 @@ def get_welcome_response():
     session_attributes = {}
     card_title = "HowHigh"
     speech_output = "What would you like to know?"
-    reprompt_text = "You can ask: how high is the river?"
+    reprompt_text = "You can ask: how high is the river? Or: How high will the river be in two days?"
     should_end_session = False
     return build_response(session_attributes, build_speechlet_response(
         card_title, speech_output, reprompt_text, should_end_session))
 
 def current_height():
     session_attributes = {}
-    card_title = "How high is the Ohio river?"
+    card_title = "River height right now"
     reprompt_text = ""
     should_end_session = True
  
@@ -77,16 +77,18 @@ def current_height():
 
 def look_up_height(date):
     session_attributes = {}
-    # card_title = "How high is the Ohio river?"
     reprompt_text = ""
     should_end_session = True
-     
+    
     # Return nearest observations/predictions
     data = hs.data_array(date)
     
+    # Title card
+    card_title = "River height on " + data.req.format("dddd, MMMM Do")
+        
     # Generate speech output
-    speech_output = "<speak>On <say-as interpret-as=""date"">" + "0120" + "</say-as>, " + data.humanize() + "</speak>"
-    pdb.set_trace()
+    speech_output = data.humanize()
+
     return build_response(session_attributes, build_speechlet_response(
         card_title, speech_output, reprompt_text, should_end_session))
 

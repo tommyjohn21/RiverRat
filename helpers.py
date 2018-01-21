@@ -5,6 +5,7 @@ import xml.etree.ElementTree as ET
 import arrow
 import math
 import cfg
+import aniso8601
 
 class datum:
     def __init__(self,key,n):
@@ -30,7 +31,7 @@ class data_array:
     def __init__(self,date):
         
         # Get turn requested time into arrow time object
-        self.req = arrow.get(date['value'])
+        self.req, self.datestr = date_parser(date)
         
         # Find data for days listed in req
         self.heights, self.units, self.key = get_matching_data(self.req)
@@ -47,11 +48,11 @@ class data_array:
         
         # Humanize data
         if self.key == "forecast":
-            human_string = "the river is predicted to be between " + str(self.min()) + " and " + str(self.max()) + " feet"
+            human_string = self.datestr + ", the river is predicted to be between " + str(self.min()) + " and " + str(self.max()) + " feet"
         elif self.key == "observed":
-            human_string = "the river was observed to be between " + str(self.min()) + " and " + str(self.max()) + " feet"
-        else:
-            raise ValueError("Both observations and predictions are present in the date-matched data!")
+            human_string = self.datestr + ", the river was observed to be between " + str(self.min()) + " and " + str(self.max()) + " feet"
+        elif self.key == "both":
+            human_string = "Based on " + self.datestr.lower() + "'s observations and forecasted predictions, the river should be between " + str(self.min()) + " and " + str(self.max()) + " feet"
             
         return human_string
 
@@ -123,9 +124,30 @@ def get_matching_data(req):
     elif all(k=="observed" for k in keys):
         key = "observed"
     else:
-        raise ValueError("Dont know how to handle mixed observations and predictions yet!")
+        key = "both"
 
     # Output the correct list  
     return heights, units, key
+    
+def date_parser(date):
+    
+    if 'W' in date['value']:
+        raise ValueError("Can't handle week inputs yet")
+    else:
+        date = arrow.get(date['value']).replace(tzinfo=cfg.YOUR_ZONE)
+        day_offset = (date.date() - arrow.utcnow().to(cfg.YOUR_ZONE).date()).days
+        # Parse datestr
+        if day_offset < -1:
+            datestr = "{} days ago".format(-1*day_offset)
+        elif day_offset == -1:
+            datestr = "Yesterday"
+        elif day_offset == 0:
+            datestr = "Today"
+        elif day_offset == 1:
+            datestr = "Tomorrow"
+        elif day_offset > 1:
+            datestr = "In {} days".format(day_offset)
+        
+    return date, datestr
         
     
