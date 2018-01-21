@@ -34,6 +34,8 @@ def on_intent(intent_request, session):
 
     if intent_name == "CurrentHeight":
         return current_height()
+    elif intent_name == "LookUpHeight":
+        return look_up_height(intent_request["intent"]["slots"]["Date"])
     elif intent_name == "AMAZON.HelpIntent":
         return get_welcome_response()
     elif intent_name == "AMAZON.CancelIntent" or intent_name == "AMAZON.StopIntent":
@@ -67,9 +69,22 @@ def current_height():
     reprompt_text = ""
     should_end_session = True
  
-    last_obs = hs.datum("obs",0) # n-back of 0
+    last_obs = hs.datum("observed",0) # n-back of 0
     speech_output = "As of " + last_obs.time.humanize() + ", the river was " + last_obs.height + " " + last_obs.units
 
+    return build_response(session_attributes, build_speechlet_response(
+        card_title, speech_output, reprompt_text, should_end_session))
+
+def look_up_height(date):
+    session_attributes = {}
+    # card_title = "How high is the Ohio river?"
+    reprompt_text = ""
+    should_end_session = True
+     
+    # Return nearest observations/predictions
+    data = hs.data_array(date)
+    pdb.set_trace()
+    # speech_output = 
     return build_response(session_attributes, build_speechlet_response(
         card_title, speech_output, reprompt_text, should_end_session))
 

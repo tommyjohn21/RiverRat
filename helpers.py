@@ -3,6 +3,7 @@ import pdb
 import requests
 import xml.etree.ElementTree as ET
 import arrow
+import math
 import cfg
 
 class datum:
@@ -13,14 +14,8 @@ class datum:
         # Convert for XML parsing to element tree (et)
         et = ET.fromstring(response.text)
         
-        # Determine if you are looking forward or backward
-        if key == "obs":
-            key_str = "observed"
-        elif key == "pred":
-            key_str = "forecast"
-        
         # Get nth datum
-        dtm = get_datum(et,key_str,n)
+        dtm = get_datum(et,key,n)
 
         # Embed direction
         self.key = key
@@ -30,9 +25,26 @@ class datum:
     
         # Observation height
         self.height, self.units = get_height(dtm)
+        
+class data_array:
+    def __init__(self,date):
+        
+        # Get turn requested time into arrow time object
+        self.req = arrow.get(date['value'])
+        
+        # Find data for days listed in req
+        self.data = get_matching_data(self.req)
+        
+    def min(self):
+        # Find the minimum of the data_array
+        return min([float(d.height) for d in self.data])
+         
+    def max(self):
+        # Find the minimum of the data_array
+        return max([float(d.height) for d in self.data])
 
-def get_datum(et,key_str,n):
-    dtm = et.find(key_str)
+def get_datum(et,key,n):
+    dtm = et.find(key)
     return dtm[n]
     
 def get_time(dtm):
@@ -62,4 +74,46 @@ def get_height(dtm):
         units = 'feet'
         
     return height, units
+    
+def get_timeline(et):
+
+    # Harvest all data
+    timeline = dict()
+    for key in ["observed","forecast"]:
+        timeline[key] = list()
+        for dtm in et.find(key).findall("datum"):
+            timeline[key].append(get_time(dtm))
+
+    # Return timeline
+    return timeline
+    
+def get_matching_data(req):
+    
+    # Curl response
+    response = requests.get(cfg.XML_BASE)
+    
+    # Convert for XML parsing to element tree (et)
+    et = ET.fromstring(response.text)
+    
+    # Process timeline
+    timeline = get_timeline(et)
+    
+    # Parse out indices of the correct dates
+    idx = dict()
+    for key in ["observed","forecast"]:
+        dates = [time.date() for time in timeline[key]]
+        idx[key] = []
+        for i,d in enumerate(dates):
+            if d == req.date():
+                idx[key].append(i)
+    
+    # Grab the actual data points
+    data = list()
+    for key in ["observed","forecast"]:
+        for i in idx[key]:
+            data.append(datum(key,i))
+    
+    # Output the correct list  
+    return data
+        
     

@@ -1,8 +1,8 @@
 region: us-east-1
 
-function_name: my_lambda_function
+function_name: river-rat
 handler: service.handler
-description: My first lambda function
+description: Back end for RiverRat Alexa skill
 runtime: python2.7
 # role: lambda_basic_execution
 
@@ -13,8 +13,8 @@ runtime: python2.7
 
 # if access key and secret are left blank, boto will use the credentials
 # defined in the [default] section of ~/.aws/credentials.
-aws_access_key_id:
-aws_secret_access_key:
+aws_access_key_id: AKIAIQYJ4SLNGG4XSFZQ
+aws_secret_access_key: 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
 
 # dist_directory: dist
 # timeout: 15
