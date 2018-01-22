@@ -5,7 +5,6 @@ import xml.etree.ElementTree as ET
 import arrow
 import math
 import cfg
-import aniso8601
 
 class datum:
     def __init__(self,key,n):
@@ -48,9 +47,9 @@ class data_array:
         
         # Humanize data
         if self.key == "forecast":
-            human_string = self.datestr + ", the river is predicted to be between " + str(self.min()) + " and " + str(self.max()) + " feet"
+            human_string = self.datestr + ", the river should be between " + str(self.min()) + " and " + str(self.max()) + " feet"
         elif self.key == "observed":
-            human_string = self.datestr + ", the river was observed to be between " + str(self.min()) + " and " + str(self.max()) + " feet"
+            human_string = self.datestr + ", the river was between " + str(self.min()) + " and " + str(self.max()) + " feet"
         elif self.key == "both":
             human_string = "Based on " + self.datestr.lower() + "'s observations and forecasted predictions, the river should be between " + str(self.min()) + " and " + str(self.max()) + " feet"
             
