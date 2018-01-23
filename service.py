@@ -2,8 +2,9 @@
 
 # Import packages
 import pdb
-import helpers as hs
 import cfg
+from parse_xml import timeline
+import parse_response
 
 def handler(event, context):
         
@@ -65,29 +66,29 @@ def get_welcome_response():
 
 def current_height():
     session_attributes = {}
-    card_title = "River height right now"
+    card_title = "Current river height"
     reprompt_text = ""
     should_end_session = True
- 
-    last_obs = hs.datum("observed",0) # n-back of 0
-    speech_output = "As of " + last_obs.time.humanize() + ", the river was " + last_obs.height + " " + last_obs.units
+    
+    response = parse_response.current_height()
+    speech_output = response.speech_output
 
     return build_response(session_attributes, build_speechlet_response(
         card_title, speech_output, reprompt_text, should_end_session))
 
-def look_up_height(date):
+def look_up_height(dateslot):
     session_attributes = {}
     reprompt_text = ""
     should_end_session = True
     
-    # Return nearest observations/predictions
-    data = hs.data_array(date)
+    # Parse response
+    response = parse_response.look_up_heights(dateslot)
     
     # Title card
-    card_title = "River height on " + data.req.format("dddd, MMMM Do")
+    card_title = "River height on " + response.req.dates[0].format("dddd, MMMM Do")
         
     # Generate speech output
-    speech_output = data.humanize()
+    speech_output = response.speech_output
 
     return build_response(session_attributes, build_speechlet_response(
         card_title, speech_output, reprompt_text, should_end_session))
