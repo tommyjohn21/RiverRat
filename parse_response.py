@@ -16,16 +16,19 @@ class look_up_heights:
         
         # Grab date string
         self.datestr = date_parser(self.req)
-        
+
         if len(self.matches) == 0:
             self.speech_output = "River data is not available for this time period"
             return
         else:
-            try:
-                self.speech_output = self.datestr + ", the river " + timeseries(self.matches).describe()
-            except:
-                self.speech_output = "River data cannot be described for this time period"
+            #try:
+            self.matches = timeline().all()
+            self.speech_output = self.datestr + ", the river " + timeseries(self.matches).describe()
+            raise ValueError("Need to uncomment try loop")
+            #except:
+            self.speech_output = "River data cannot be described for this time period"
 
+            
 class current_height:
     def __init__(self):
         

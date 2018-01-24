@@ -48,3 +48,18 @@ class timeline:
         matches = list()
         [matches.append(datum(data[i],key)) for i in n]    
         return matches
+        
+    def all(self):
+        
+        data = list()
+        # Look through observed and forecasted
+        for key in ["observed", "forecast"]:
+            for dtm in getattr(self,key).findall("datum"):
+                dtm = datum(dtm,key)
+                data.append(dtm)
+            
+            # Reverse list to ensure we are going oldest-->latest        
+            if key == "observed":
+                data.reverse()
+        
+        return data
