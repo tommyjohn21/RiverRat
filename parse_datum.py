@@ -13,6 +13,10 @@ class datum:
         self.xml.append(ET.Element('key'))
         self.xml[-1].text = key
         
+        # Initialize open element container "tag" for use labeleing crests, troughs and endpoints (see parse_timeseries_description)
+        self.xml.append(ET.Element('tag'))
+        self.xml[-1].text = ""
+        
     def time(self):
         # Get initial timestamp from datum
         time = self.xml.find('valid').text
@@ -42,6 +46,19 @@ class datum:
         key = self.xml.find('key').text
         
         return key
+        
+    def set_tag(self,t):
+        
+        # Set tag
+        self.xml.find('tag').text = t
+    
+    
+    def tag(self):
+        
+        # Get tag
+        tag = self.xml.find('tag').text
+        
+        return tag
         
     def units(self):
         

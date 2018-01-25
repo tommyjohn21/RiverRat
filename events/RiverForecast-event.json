@@ -1,0 +1,40 @@
+{
+  "session": {
+    "new": true,
+    "sessionId": "SessionId.bff4b5ab-6235-410d-a569-304f66f9c7ef",
+    "application": {
+      "applicationId": "amzn1.ask.skill.2741149f-5d26-46d2-901b-48e72b7ca7c4"
+    },
+    "attributes": {},
+    "user": {
+      "userId": "amzn1.ask.account.AG3DBOUVPO6XON47FTWZKIZIK2T3C2HYJF6BIGCRFAOP3M7HDXHIRTGGN2ULSN46I6G7HZOPRBXM5VDIUEJHGGC4NF2WXHVFUTWHAD43IVKIPKHQJGH6YJR2HBG77SSE2IC36GRKGLOFMI6HGX5ZR7JXPBYUKKJOEIIN4M5KGV6OX5L5CRS2YCG47H6FEAIGOSQ7UQHUKSQWEEA"
+    }
+  },
+  "request": {
+    "type": "IntentRequest",
+    "requestId": "EdwRequestId.ca4690c0-8600-4d2e-8ef4-344078b2d7ec",
+    "intent": {
+      "name": "RiverForecast",
+      "slots": {}
+    },
+    "locale": "en-US",
+    "timestamp": "2017-12-28T23:46:52Z"
+  },
+  "context": {
+    "AudioPlayer": {
+      "playerActivity": "IDLE"
+    },
+    "System": {
+      "application": {
+        "applicationId": "amzn1.ask.skill.2741149f-5d26-46d2-901b-48e72b7ca7c4"
+      },
+      "user": {
+        "userId": "amzn1.ask.account.AG3DBOUVPO6XON47FTWZKIZIK2T3C2HYJF6BIGCRFAOP3M7HDXHIRTGGN2ULSN46I6G7HZOPRBXM5VDIUEJHGGC4NF2WXHVFUTWHAD43IVKIPKHQJGH6YJR2HBG77SSE2IC36GRKGLOFMI6HGX5ZR7JXPBYUKKJOEIIN4M5KGV6OX5L5CRS2YCG47H6FEAIGOSQ7UQHUKSQWEEA"
+      },
+      "device": {
+        "supportedInterfaces": {}
+      }
+    }
+  },
+  "version": "1.0"
+}

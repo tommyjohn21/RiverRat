@@ -18,23 +18,6 @@ class timeline:
         self.forecast = response_xml.find("forecast")
         self.sigstages = response_xml.find("sigstages")
     
-    def find_data_by_dates(self, req):
-            
-        matches = list()
-        # Look through observed and forecasted
-        for key in ["observed", "forecast"]:
-            for dtm in getattr(self,key).findall("datum"):
-                dtm = datum(dtm,key)
-                # If datum date is in requested dates
-                if dtm.time().date() in [r.date() for r in req.dates]:
-                    matches.append(dtm)
-            
-            # Reverse list to ensure we are going oldest-->latest        
-            if key == "observed":
-                matches.reverse()
-                
-        return matches
-    
     def find_n(self,key,n):
         
         # Grab either observations or predictions
