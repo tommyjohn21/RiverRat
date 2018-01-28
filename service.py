@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
-
 # Import packages
 import pdb
-import cfg
-from parse_xml import timeline
-import parse_response
+import parse
 
 def handler(event, context):
         
@@ -37,8 +34,8 @@ def on_intent(intent_request, session):
         return current_height()
     elif intent_name == "LookUpHeight":
         return look_up_height(intent_request["intent"]["slots"]["Date"])
-    elif intent_name == "RiverForecast":
-        return river_forecast()
+    # elif intent_name == "RiverForecast":
+    #     return river_forecast()
     elif intent_name == "AMAZON.HelpIntent":
         return get_welcome_response()
     elif intent_name == "AMAZON.CancelIntent" or intent_name == "AMAZON.StopIntent":
@@ -72,36 +69,36 @@ def current_height():
     reprompt_text = ""
     should_end_session = True
     
-    response = parse_response.current_height()
+    response = parse.response.current_height()
     speech_output = response.speech_output
 
     return build_response(session_attributes, build_speechlet_response(
         card_title, speech_output, reprompt_text, should_end_session))
         
-def river_forecast():
-    session_attributes = {}
-    card_title = "River forecast"
-    reprompt_text = ""
-    should_end_session = True
-    
-    response = parse_response.river_forecast()
-    pdb.set_trace()
-    speech_output = response.speech_output
-
-    return build_response(session_attributes, build_speechlet_response(
-        card_title, speech_output, reprompt_text, should_end_session))
+# def river_forecast():
+#     session_attributes = {}
+#     card_title = "River forecast"
+#     reprompt_text = ""
+#     should_end_session = True
+#
+#     response = parse_response.river_forecast()
+#     pdb.set_trace()
+#     speech_output = response.speech_output
+#
+#     return build_response(session_attributes, build_speechlet_response(
+#         card_title, speech_output, reprompt_text, should_end_session))
 
 def look_up_height(dateslot):
     session_attributes = {}
     reprompt_text = ""
     should_end_session = True
-    
+
     # Parse response
-    response = parse_response.look_up_heights(dateslot)
-    
+    response = parse.response.look_up_heights(dateslot)
+
     # Title card
     card_title = "River height on " + response.req.dates[0].format("dddd, MMMM Do")
-        
+
     # Generate speech output
     speech_output = response.speech_output
 
