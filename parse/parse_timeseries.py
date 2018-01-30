@@ -22,7 +22,7 @@ class timeseries():
         self.crests, self.cidx, self.troughs, self.tidx = self.convert_tides()
         
         # Code to gut-check spline fit
-        # if False: self.plot()
+        # if True: self.plot()
         
         # Compute range object
         self.range = range(self.heights)
@@ -48,7 +48,7 @@ class timeseries():
         return crests, cidx, troughs, tidx
     
     def find_data_by_dates(self,req):
-        
+
         # Output req in self object
         self.req = req
         
@@ -81,17 +81,21 @@ class timeseries():
         
         return self
     
-    # def plot(self):
-    #
-    #     import matplotlib.pyplot as plt
-    #
-    #     plt.plot(self.spline.t,self.spline.s(self.spline.t))
-    #     plt.hold(True)
-    #     [plt.plot(self.times[i],self.heights[i],'ro',markersize=10) for i in self.cidx]
-    #     [plt.plot(self.times[i],self.heights[i],'ro',markersize=10) for i in self.tidx]
-    #     plt.plot(self.times,self.heights,'kx')
-    #     plt.show()
-    #     pdb.set_trace()
+    def plot(self):
+        try:
+            import matplotlib.pyplot as plt
+
+            plt.plot(self.spline.t,self.spline.s(self.spline.t))
+            plt.hold(True)
+            [plt.plot(self.times[i],self.heights[i],'ro',markersize=10) for i in self.cidx]
+            [plt.plot(self.times[i],self.heights[i],'ro',markersize=10) for i in self.tidx]
+            [plt.plot(i,self.spline.s(i),'g.',markersize=15) for i in self.spline.crests]
+            [plt.plot(i,self.spline.s(i),'g.',markersize=15) for i in self.spline.troughs]
+            plt.plot(self.times,self.heights,'kx')
+            plt.show()
+            pdb.set_trace()
+        except:
+            pass
         
     def describe(self):
 
@@ -132,13 +136,13 @@ class spline:
         # Define crests
         crests = list()
         for i in points:
-            if d_1.__call__(i,1) < 0:
+            if d_1.__call__(i,1) < -1e-8:
                 crests.append(i)
 
         # Define troughs
         troughs = list()
         for i in points:
-            if d_1.__call__(i,1) > 0:
+            if d_1.__call__(i,1) > 1e-8:
                 troughs.append(i)
 
         return crests, troughs

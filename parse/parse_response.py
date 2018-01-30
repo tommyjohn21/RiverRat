@@ -16,13 +16,16 @@ class look_up_heights:
         self.matches = parse.timeseries(self.all).find_data_by_dates(self.req)
 
         if self.matches is None:
-            self.speech_output = "River data is not available for the requested time period"
+            if len(self.req.dates) == 1:
+                self.speech_output = "River data is not available for " + self.req.dates[0].format("dddd, MMMM Do")
+            else:
+                self.speech_output = "River data is not available for the requested time period"
             return
         else:
             try:
                 self.speech_output = self.matches.describe()
             except:
-                self.speech_output = "River data cannot be described for this time period"
+                self.speech_output = "River data cannot be described for this time period. Please tell Tommy"
 
             
 class current_height:
